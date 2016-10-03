@@ -5,6 +5,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt-as-promised')
 const knex = require('../knex')
 const humps = require('humps')
+const session = require('cookie-session')
 
 router.post('/users', (req, res, next) => {
     bcrypt.hash(req.body.password, 12)
@@ -20,6 +21,7 @@ router.post('/users', (req, res, next) => {
         .then((users) => {
             const user = users[0]
             delete user.hashed_password
+            req.session.userInfo = user;
             res.send(humps.camelizeKeys(user))
         })
         .catch((err) => {
